@@ -10,11 +10,15 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 import {catchError, map, tap} from 'rxjs/operators';
 
+const httpOptions = {
+		headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+	};
+
 @Injectable({
   providedIn: 'root'
 })
 export class HeroService {
-
+	
 	private heroesUrl = 'api/heroes';
 
 	constructor(private messageService: MessageService,
@@ -60,6 +64,14 @@ export class HeroService {
   
   private log(message: string): void {
 	  this.messageService.add(`HeroService: ${message}`);
+  }
+  
+  updateHero(hero: Hero): Observable<any>{
+	  return this.http.put(this.heroesUrl, hero, httpOptions)
+			.pipe(
+				tap(_ => this.log(`update hero id=${hero.id}`)),
+				catchError(this.handleError<any>('updateHero'))
+			);
   }
   
 }
